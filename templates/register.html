@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login-register.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- logo -->
+        <img src="{{ url_for('static', filename='images/iris.png') }}" alt="Iris Logo" class="login-image">
+
+        <!-- messages -->
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- registration form -->
+        <form action="{{ url_for('register') }}" method="post" novalidate autocomplete="off">
+            <div class="input-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="username" autocomplete="new-email" required>
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" autocomplete="new-password" required>
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+            <button type="submit" class="btn">Register</button>
+        </form>
+
+        <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
+    </div>
+
+    <script>
+        // clear input fields
+        window.onload = clearInputs;
+        window.addEventListener('pageshow', event => {
+            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                clearInputs();
+            }
+        });
+
+        // clears input fields
+        function clearInputs() {
+            document.querySelectorAll("input[type='text'], input[type='email'], input[type='password']").forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById("password");
+            const toggleButtonIcon = document.querySelector(".toggle-password i");
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleButtonIcon.classList.replace("fa-eye", "fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                toggleButtonIcon.classList.replace("fa-eye-slash", "fa-eye");
+            }
+        }
+    </script>
+</body>
+
+</html>

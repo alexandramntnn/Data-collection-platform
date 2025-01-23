@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <!-- sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Dashboard overview</a>
+        <a href="{{ url_for('visualize_data') }}"><i class="fas fa-chart-line"></i> Visualize data</a>
+        <a href="{{ url_for('upload') }}"><i class="fas fa-upload"></i> Upload data</a>
+        <a href="{{ url_for('download') }}"><i class="fas fa-download"></i> Download data</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('faq') }}"><i class="fas fa-question-circle"></i> FAQ</a>
+        <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="dashboard-content">
+        <h1 class="page-title">Account settings</h1>
+
+        <!-- change password -->
+        <div class="settings-section">
+            <h2><i class="fas fa-key"></i> Change password</h2>
+            <form action="{{ url_for('settings') }}" method="post">
+                <!-- messages -->
+                {% if error_messages %}
+                <div class="flash-messages">
+                    {% for error in error_messages %}
+                    <div class="flash-message danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if success_messages %}
+                <div class="flash-messages">
+                    {% for success in success_messages %}
+                    <div class="flash-message success">{{ success }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- password fields -->
+                <div class="input-group">
+                    <label for="current_password">Current password:</label>
+                    <input type="password" id="current_password" name="current_password"
+                        placeholder="Enter current password" required>
+                </div>
+                <div class="input-group">
+                    <label for="new_password">New password:</label>
+                    <input type="password" id="new_password" name="new_password" placeholder="Enter new password"
+                        required>
+                </div>
+                <button type="submit" class="btn save-btn">Change password</button>
+            </form>
+        </div>
+
+        <!-- delete account -->
+        <div class="settings-section">
+            <h2><i class="fas fa-trash-alt"></i> Delete account</h2>
+            <p class="warning-message">
+                Deleting your account is a permanent action and cannot be undone. All your data will be permanently
+                erased</strong>.
+            </p>
+            <form action="{{ url_for('settings') }}" method="post"
+                onsubmit="return confirm('Are you sure you want to delete your account?');">
+                <button type="submit" name="delete_account" class="btn delete-btn">Delete Account</button>
+            </form>
+        </div>
+
+        <!-- manage uploaded files -->
+        <div class="settings-section">
+            <h2><i class="fas fa-folder"></i> Manage uploaded files</h2>
+            <form id="house-selection-form">
+                <label for="house_select">Select property:</label>
+                <select name="house_id" id="house_select">
+                    {% for house in houses %}
+                    <option value="{{ house.id }}">{{ house.name }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            <table class="uploaded-files-table" id="files-table">
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const houseSelect = document.getElementById('house_select');
+        const filesTable = document.getElementById('files-table').querySelector('tbody');
+
+        houseSelect.addEventListener('change', async function () {
+            const selectedHouseId = this.value;
+
+            try {
+                const response = await fetch(`/api/files/${selectedHouseId}`);
+                const data = await response.json();
+
+                filesTable.innerHTML = '';
+
+                if (data.files.length === 0) {
+                    filesTable.innerHTML = '<tr><td colspan="2">No files found for this property.</td></tr>';
+                    return;
+                }
+
+                data.files.forEach(file => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${file.filename}</td>
+                        <td>
+                            <form action="/settings" method="post">
+                                <input type="hidden" name="file_id" value="${file.id}">
+                                <button type="submit" class="btn delete-btn">Delete</button>
+                            </form>
+                        </td>
+                    `;
+                    filesTable.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching files:', error);
+                filesTable.innerHTML = '<tr><td colspan="2">Error fetching files.</td></tr>';
+            }
+        });
+
+        houseSelect.dispatchEvent(new Event('change'));
+    </script>
+</body>
+
+</html>

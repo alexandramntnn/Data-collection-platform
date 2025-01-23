@@ -1,0 +1,29 @@
+/* sidebar */
+.sidebar {
+    width: 250px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #1f3c63;
+    color: white;
+    padding-top: 20px;
+    text-align: left;
+    z-index: 1000;
+}
+
+.sidebar a {
+    padding: 12px 20px;
+    font-size: 16px;
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s, color 0.3s;
+    font-family: 'Lato', sans-serif;
+    font-weight: 400;
+}
+
+.sidebar a:hover {
+    background-color: #334e7a;
+    color: #eaeaea;
+}

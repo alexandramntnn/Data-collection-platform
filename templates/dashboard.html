@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Dashboard overview</a>
+        <a href="{{ url_for('visualize_data') }}"><i class="fas fa-chart-line"></i> Visualize data</a>
+        <a href="{{ url_for('upload') }}"><i class="fas fa-upload"></i> Upload data</a>
+        <a href="{{ url_for('download') }}"><i class="fas fa-download"></i> Download data</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('faq') }}"><i class="fas fa-question-circle"></i> FAQ</a>
+        <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- main -->
+    <div class="dashboard-content">
+        <h1 class="chart-title">Energy consumption</h1>
+
+        <!-- select house -->
+        <div class="house-select-container">
+            <form action="{{ url_for('dashboard') }}" method="post">
+                <label for="house_select" class="visually-hidden"></label>
+                <select name="house_id" id="house_select" onchange="this.form.submit()">
+                    {% for house in houses %}
+                    <option value="{{ house.id }}" {% if house.id==selected_house_id %}selected{% endif %}>
+                        {{ house.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <!-- chart -->
+        <div class="chart-container">
+            <canvas id="energyChart"></canvas>
+        </div>
+
+        <!-- message -->
+        {% if not energy_data %}
+        <p class="no-data-message">No energy data available for the selected property.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        // Energy data for the chart
+        const energyData = JSON.parse('{{ energy_data | tojson | safe }}');
+        const ctx = document.getElementById('energyChart').getContext('2d');
+
+        if (energyData.length > 0) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: energyData.map(item => item.date),
+                    datasets: [{
+                        label: 'Energy consumption (kWh)',
+                        data: energyData.map(item => item.energy_consumption),
+                        borderColor: '#1f3c63',
+                        backgroundColor: 'rgba(31, 60, 99, 0.2)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Energy consumption (kWh)'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

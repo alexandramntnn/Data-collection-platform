@@ -1,0 +1,112 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f5f6fa;
+    color: #2d3e50;
+    margin: 0;
+}
+
+/* dashboard content */
+.dashboard-content {
+    margin-left: 250px;
+    padding: 30px;
+    color: #2d3e50;
+    background-color: #f4f6f9;
+    text-align: center;
+}
+
+.dashboard-content h1 {
+    font-size: 26px;
+    font-weight: bold;
+    color: #1f3c63;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+
+form {
+    max-width: 500px;
+    margin: 0 auto; 
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+
+.checkbox-group {
+    display: block;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.checkbox-group input[type="checkbox"] {
+    position: absolute;
+    left: -135px;
+    top: -3px;
+}
+
+
+form label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #2d3e50;
+}
+
+
+form input,
+form select {
+    font-size: 14px;
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+form button {
+    background-color: #28a745;
+    color: white;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #218838;
+}
+
+
+/* error messages */
+.error-messages {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    max-width: 500px;
+}
+
+.error-messages ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.error-messages li.error {
+    color: #721c24;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+

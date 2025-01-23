@@ -1,0 +1,72 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f5f6fa;
+    color: #2d3e50;
+    margin: 0;
+}
+
+/* dashboard content */
+.dashboard-content {
+    margin-left: 250px;
+    padding: 20px 40px;
+    text-align: center;
+}
+
+/* chart title */
+.chart-title {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #1f3c63;
+}
+
+/* chart container */
+.chart-container {
+    position: relative;
+    max-width: 900px;
+    width: 100%;
+    height: 500px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+.house-select-container {
+    position: absolute;
+    top: 65px;
+    right: 270px;
+    display: flex;
+    align-items: center;
+}
+
+#house_select {
+    font-size: 14px;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+
+.no-data-message {
+    font-size: 16px;
+    color: #888;
+    margin-top: 20px;
+}
+
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+    padding: 0;
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/download.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <!-- sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Dashboard overview</a>
+        <a href="{{ url_for('visualize_data') }}"><i class="fas fa-chart-line"></i> Visualize data</a>
+        <a href="{{ url_for('upload') }}"><i class="fas fa-upload"></i> Upload data</a>
+        <a href="{{ url_for('download') }}"><i class="fas fa-download"></i> Download data</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('faq') }}"><i class="fas fa-question-circle"></i> FAQ</a>
+        <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="dashboard-content">
+        <h1 class="page-title">Download data</h1>
+
+        <!-- filter form -->
+        <form method="post" action="{{ url_for('download') }}">
+            <!-- filters -->
+            <label for="house_types">Property Type:</label>
+            <select name="house_types" id="house_types">
+                <option value="">Any</option>
+                <option value="Detached">Detached</option>
+                <option value="Semi-detached">Semi-detached</option>
+                <option value="Apartment">Apartment</option>
+            </select>
+
+            <label for="area_types">Area Type:</label>
+            <select name="area_types" id="area_types">
+                <option value="">Any</option>
+                <option value="Urban">Urban</option>
+                <option value="Suburban">Suburban</option>
+                <option value="Rural">Rural</option>
+            </select>
+
+            <label for="house_sizes">Property Size:</label>
+            <select name="house_sizes" id="house_sizes">
+                <option value="">Any</option>
+                <option value="0-50">0-50</option>
+                <option value="51-75">51-75</option>
+                <option value="76-100">76-100</option>
+                <option value="101-150">101-150</option>
+                <option value="151-200">151-200</option>
+                <option value="201-250">201-250</option>
+                <option value=">250">>250</option>
+            </select>
+
+            <label for="insulation_levels">Insulation Level:</label>
+            <select name="insulation_levels" id="insulation_levels">
+                <option value="">Any</option>
+                <option value="None">None</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+
+            <label for="occupancy_patterns">Filter by occupancy patterns:</label>
+            <select id="occupancy_patterns" name="occupancy_patterns">
+                <option value="">Any</option>
+                {% for pattern in occupancy_patterns %}
+                <option value="{{ pattern }}">{{ pattern }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="occupants">Filter by occupants:</label>
+            <select id="occupants" name="occupants">
+                <option value="">Any</option>
+                {% for occupant in occupants %}
+                <option value="{{ occupant }}">{{ occupant }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="solar_capacity">Minimum solar capacity (kW):</label>
+            <input type="number" id="solar_capacity" name="solar_capacity" step="0.1" min="0" placeholder="e.g., 1.5">
+
+            <!-- include all data -->
+            <div class="checkbox-group">
+                <label for="include_all">Include all data</label>
+                <input type="checkbox" id="include_all" name="include_all" value="true">
+            </div>
+
+            <!-- file format -->
+            <label for="file_format">Select file format:</label>
+            <select id="file_format" name="file_format" required>
+                <option value="csv">CSV</option>
+                <option value="json">JSON</option>
+                <option value="excel">Excel</option>
+            </select>
+
+            <!-- messages -->
+            {% if error_messages %}
+            <div class="error-messages">
+                <ul>
+                    {% for error in error_messages %}
+                    <li class="error">{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- button -->
+            <button type="submit">Download file</button>
+        </form>
+    </div>
+</body>
+
+</html>

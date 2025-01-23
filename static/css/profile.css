@@ -1,0 +1,131 @@
+body {
+    font-family: 'Lato', sans-serif;
+    background-color: #f5f6fa;
+    color: #2d3e50;
+    margin: 0;
+    text-align: left;
+}
+
+/* dashboard content */
+.dashboard-content {
+    margin-left: 250px;
+    padding: 30px;
+    background-color: #f5f6fa;
+}
+
+
+.page-title {
+    font-size: 26px;
+    font-weight: bold;
+    color: #1f3c63;
+    margin-bottom: 30px;
+}
+
+
+.profile-section {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.profile-section h2 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1f3c63;
+    margin-bottom: 15px;
+}
+
+
+.user-info {
+    background: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-info p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+
+.houses-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+
+.house-card {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: calc(33.333% - 20px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.house-card h3 {
+    font-size: 20px;
+    color: #1f3c63;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.house-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.add-house-btn {
+    background-color: #28a745;
+    font-size: 16px;
+    width: 100%;
+}
+
+.add-house-btn:hover {
+    background-color: #218838;
+}
+
+.edit-btn {
+    background-color: #ffc107;
+    color: #2d3e50;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}

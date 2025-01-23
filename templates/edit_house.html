@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_house.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <!-- sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Dashboard overview</a>
+        <a href="{{ url_for('visualize_data') }}"><i class="fas fa-chart-line"></i> Visualize data</a>
+        <a href="{{ url_for('upload') }}"><i class="fas fa-upload"></i> Upload data</a>
+        <a href="{{ url_for('download') }}"><i class="fas fa-download"></i> Download data</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('faq') }}"><i class="fas fa-question-circle"></i> FAQ</a>
+        <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="dashboard-content">
+        <h1 class="page-title">Edit property</h1>
+
+        <!-- edit form -->
+        <form action="{{ url_for('edit_house', house_id=house['id']) }}" method="post" class="form-container">
+            <!-- input fields -->
+            <label for="house_name">Property name:</label>
+            <input type="text" id="house_name" name="house_name" value="{{ house['name'] }}" required>
+
+            <label for="house_type">Property type:</label>
+            <select id="house_type" name="house_type" required>
+                <option value="Detached" {% if house['house_type']=='Detached' %}selected{% endif %}>Detached</option>
+                <option value="Semi-detached" {% if house['house_type']=='Semi-detached' %}selected{% endif %}>Semi-detached</option>
+                <option value="Apartment" {% if house['house_type']=='Apartment' %}selected{% endif %}>Apartment</option>
+            </select>
+
+            <label for="type_of_area">Type of area:</label>
+            <select id="type_of_area" name="type_of_area" required>
+                <option value="Urban" {% if house['type_of_area']=='Urban' %}selected{% endif %}>Urban</option>
+                <option value="Suburban" {% if house['type_of_area']=='Suburban' %}selected{% endif %}>Suburban</option>
+                <option value="Rural" {% if house['type_of_area']=='Rural' %}selected{% endif %}>Rural</option>
+            </select>
+
+            <label for="house_size">Property size:</label>
+            <select id="house_size" name="house_size" required>
+                <option value="0-50" {% if house['house_size']=='0-50' %}selected{% endif %}>0-50 m²</option>
+                <option value="51-75" {% if house['house_size']=='51-75' %}selected{% endif %}>51-75 m²</option>
+                <option value="76-100" {% if house['house_size']=='76-100' %}selected{% endif %}>76-100 m²</option>
+                <option value="101-150" {% if house['house_size']=='101-150' %}selected{% endif %}>101-150 m²</option>
+                <option value="151-200" {% if house['house_size']=='151-200' %}selected{% endif %}>151-200 m²</option>
+                <option value="201-250" {% if house['house_size']=='201-250' %}selected{% endif %}>201-250 m²</option>
+                <option value=">250" {% if house['house_size']=='>250' %}selected{% endif %}>>250 m²</option>
+            </select>
+
+            <label for="insulation_level">Insulation level:</label>
+            <select id="insulation_level" name="insulation_level" required>
+                <option value="None" {% if house['insulation_level']=='None' %}selected{% endif %}>None</option>
+                <option value="Low" {% if house['insulation_level']=='Low' %}selected{% endif %}>Low</option>
+                <option value="Medium" {% if house['insulation_level']=='Medium' %}selected{% endif %}>Medium</option>
+                <option value="High" {% if house['insulation_level']=='High' %}selected{% endif %}>High</option>
+            </select>
+
+            <label for="occupancy_patterns">Occupancy patterns:</label>
+            <select id="occupancy_patterns" name="occupancy_patterns" required>
+                <option value="Mostly home during the day" {% if house['occupancy_patterns']=='Mostly home during the day' %}selected{% endif %}>Mostly home</option>
+                <option value="Mostly away during the day" {% if house['occupancy_patterns']=='Mostly away during the day' %}selected{% endif %}>Mostly away</option>
+            </select>
+
+            <label for="occupants">Number of occupants:</label>
+            <select id="occupants" name="occupants" required>
+                <option value="1-2" {% if house['occupants']=='1-2' %}selected{% endif %}>1-2</option>
+                <option value="3-4" {% if house['occupants']=='3-4' %}selected{% endif %}>3-4</option>
+                <option value="5+" {% if house['occupants']=='5+' %}selected{% endif %}>5+</option>
+            </select>
+
+            <label for="solar_capacity">Solar panel capacity (kW):</label>
+            <input type="number" id="solar_capacity" name="solar_capacity" value="{{ house['solar_capacity'] }}" step="0.1" min="0">
+
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" value="{{ house['location'] }}" placeholder="Enter location" required>
+
+            <!-- Google Maps autocomplete -->
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCwuL-ywPq7cF6wzzpcXAoAUNyV2N4YAH8&libraries=places&callback=initAutocomplete" async defer></script>
+            <script>
+                function initAutocomplete() {
+                    const input = document.getElementById('location');
+                    const autocomplete = new google.maps.places.Autocomplete(input, { types: ['geocode'] });
+
+                    autocomplete.addListener('place_changed', function () {
+                        const place = autocomplete.getPlace();
+                        if (!place.geometry) {
+                            console.error("No geometry available for selected place.");
+                        }
+                    });
+                }
+                document.addEventListener('DOMContentLoaded', initAutocomplete);
+            </script>
+
+            <button type="submit" class="btn save-btn">Save changes</button>
+        </form>
+    </div>
+</body>
+
+</html>

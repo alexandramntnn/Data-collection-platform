@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/visualize_data.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- sidebar -->
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-home"></i> Dashboard overview</a>
+        <a href="{{ url_for('visualize_data') }}"><i class="fas fa-chart-line"></i> Visualize data</a>
+        <a href="{{ url_for('upload') }}"><i class="fas fa-upload"></i> Upload data</a>
+        <a href="{{ url_for('download') }}"><i class="fas fa-download"></i> Download data</a>
+        <a href="{{ url_for('profile') }}"><i class="fas fa-user"></i> Profile</a>
+        <a href="{{ url_for('faq') }}"><i class="fas fa-question-circle"></i> FAQ</a>
+        <a href="{{ url_for('settings') }}"><i class="fas fa-cog"></i> Settings</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <div class="dashboard-content">
+        <!-- filters section -->
+        <div class="left-column">
+            <h1 class="page-title">Data visualization</h1>
+            <div class="filters-section">
+                <form method="post">
+
+                    <label for="house_type">Property type:</label>
+                    <select name="house_type" id="house_type">
+                        <option value="">All</option>
+                        {% for type in house_type %}
+                        <option value="{{ type }}" {% if type == selected_type %} selected {% endif %}>{{ type }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <label for="type_of_area">Area type:</label>
+                    <select name="type_of_area" id="type_of_area">
+                        <option value="">All</option>
+                        {% for area in area_type %}
+                        <option value="{{ area }}" {% if area == selected_area %} selected {% endif %}>{{ area }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="insulation_level">Insulation level:</label>
+                    <select name="insulation_level" id="insulation_level">
+                        <option value="">All</option>
+                        {% for level in insulation_level %}
+                        <option value="{{ level }}" {% if level == selected_insulation %} selected {% endif %}>{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <label for="occupants">Number of occupants:</label>
+                    <select name="occupants" id="occupants">
+                        <option value="">All</option>
+                        {% for occupant in occupants %}
+                        <option value="{{ occupant }}" {% if occupant == selected_occupants %} selected {% endif %}>{{ occupant }}</option>
+                        {% endfor %}
+                    </select>
+                    
+
+                    <label for="year_from">From year:</label>
+                    <input type="number" name="year_from" id="year_from" min="1960" max="2100" value="{{ year_from }}">
+
+                    <label for="year_to">To year:</label>
+                    <input type="number" name="year_to" id="year_to" min="1960" max="2100" value="{{ year_to }}">
+
+                    <button type="submit">Apply filters</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- visualization -->
+        <div class="right-column">
+
+            <!-- chart 1 dropdown -->
+            <div id="dropdown1" class="dropdown-container active">
+                <label for="time_scope_chart1">Select time scope:</label>
+                <select id="time_scope_chart1">
+                    <option value="year" selected>Year</option>
+                    <option value="month">Month</option>
+                </select>
+            </div>
+
+            <!-- chart 2 dropdowns -->
+            <div id="dropdown2" class="dropdown-container">
+                <label for="feature_scope_chart2">Select feature:</label>
+                <select id="feature_scope_chart2">
+                    <option value="house_type" selected>Property type</option>
+                    <option value="area_type" selected>Area type</option>
+                    <option value="house_size" selected>Property size</option>
+                    <option value="insulation_level">Insulation level</option>
+                    <option value="occupants" selected>Number of occupants</option>
+                </select>
+
+                <label for="time_scope_chart2">Select time scope:</label>
+                <select id="time_scope_chart2">
+                    <option value="year" selected>Year</option>
+                    <option value="month">Month</option>
+                </select>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-wrapper active"><canvas id="chart1"></canvas></div>
+                <div class="chart-wrapper"><canvas id="chart2"></canvas></div>
+            </div>
+            <div class="chart-controls">
+                <button id="prevButton">&larr; Previous</button>
+                <button id="nextButton">Next &rarr;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart1Instance, chart2Instance;
+        const energyByYear = JSON.parse('{{ energy_by_year | tojson | safe }}');
+        const energyByMonth = JSON.parse('{{ energy_by_month | tojson | safe }}');
+        const energyByFeature = JSON.parse('{{ energy_by_feature | tojson | safe }}');
+        const chartWrappers = document.querySelectorAll('.chart-wrapper');
+        const dropdown1Container = document.getElementById('dropdown1');
+        const dropdown2Container = document.getElementById('dropdown2');
+        let currentChartIndex = 0;
+
+        // display chart and dropdowns
+        function showChart(index) {
+            chartWrappers.forEach((wrapper, i) => wrapper.classList.toggle('active', i === index));
+            dropdown1Container.style.display = index === 0 ? 'block' : 'none';
+            dropdown2Container.style.display = index === 1 ? 'block' : 'none';
+        }
+
+        function renderChart1(timeScope) {
+            const labels = timeScope === 'year' ? Object.keys(energyByYear) : Object.keys(energyByMonth);
+            const data = timeScope === 'year' ? Object.values(energyByYear) : Object.values(energyByMonth);
+
+            if (chart1Instance) chart1Instance.destroy();
+
+            chart1Instance = new Chart(document.getElementById('chart1').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: `Energy consumption (${timeScope})`,
+                        data,
+                        backgroundColor: 'rgba(31, 60, 99, 0.15)',
+                        borderColor: '#1f3c63',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: timeScope === 'year' ? 'Year' : 'Month' } },
+                        y: { title: { display: true, text: 'Energy consumption (kWh)' } }
+                    }
+                }
+            });
+        }
+
+
+        // chart 2
+        function renderChart2(timeScope, feature) {
+            const featureData = energyByFeature[feature] || {};
+            const labels = timeScope === 'year' ? Object.keys(energyByYear) : Object.keys(energyByMonth);
+            const datasets = Object.keys(featureData).map((category, index) => ({
+                label: category,
+                data: labels.map(label => featureData[category][label] || 0),
+                borderColor: `hsl(${index * 360 / Object.keys(featureData).length}, 70%, 50%)`,
+                backgroundColor: `hsla(${index * 360 / Object.keys(featureData).length}, 70%, 50%, 0.4)`,
+                borderWidth: 2,
+                fill: false
+            }));
+
+            if (chart2Instance) chart2Instance.destroy();
+
+            chart2Instance = new Chart(document.getElementById('chart2').getContext('2d'), {
+                type: 'line',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: timeScope === 'year' ? 'Year' : 'Month' } },
+                        y: { title: { display: true, text: 'Energy consumption (kWh)' } }
+                    }
+                }
+            });
+        }
+
+        // buttons for switching charts
+        document.getElementById('prevButton').addEventListener('click', () => {
+            currentChartIndex = (currentChartIndex - 1 + chartWrappers.length) % chartWrappers.length;
+            showChart(currentChartIndex);
+        });
+
+        document.getElementById('nextButton').addEventListener('click', () => {
+            currentChartIndex = (currentChartIndex + 1) % chartWrappers.length;
+            showChart(currentChartIndex);
+        });
+
+        // Event listeners for dropdown changes
+        document.getElementById('time_scope_chart1').addEventListener('change', (e) => {
+            renderChart1(e.target.value);
+        });
+
+        document.getElementById('time_scope_chart2').addEventListener('change', () => {
+            const timeScope = document.getElementById('time_scope_chart2').value;
+            const feature = document.getElementById('feature_scope_chart2').value;
+            renderChart2(timeScope, feature);
+        });
+
+        document.getElementById('feature_scope_chart2').addEventListener('change', () => {
+            const timeScope = document.getElementById('time_scope_chart2').value;
+            const feature = document.getElementById('feature_scope_chart2').value;
+            renderChart2(timeScope, feature);
+        });
+
+        renderChart1('year');
+        renderChart2('year', 'occupants');
+        showChart(currentChartIndex);
+    </script>
+</body>
+
+</html>
